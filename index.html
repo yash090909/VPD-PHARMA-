@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en" class="theme-default light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VPD Pharma - Fusion</title>
+
+    <!-- PWA & Mobile Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#f9f5ff">
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Google Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom CSS & Overrides -->
+    <style>
+        :root {
+            /* Default Theme (Purple) */
+            --primary-light-default: #673ab7; --primary-container-light-default: #ede7f6; --on-primary-container-light-default: #5e35b1;
+            --primary-dark-default: #bb86fc; --primary-container-dark-default: #372a4f; --on-primary-container-dark-default: #e0cffc;
+            
+            /* Teal Theme */
+            --primary-light-teal: #00796B; --primary-container-light-teal: #E0F2F1; --on-primary-container-light-teal: #00695C;
+            --primary-dark-teal: #4DB6AC; --primary-container-dark-teal: #264D49; --on-primary-container-dark-teal: #B2DFDB;
+
+            /* Indigo Theme */
+            --primary-light-indigo: #3F51B5; --primary-container-light-indigo: #E8EAF6; --on-primary-container-light-indigo: #3949AB;
+            --primary-dark-indigo: #7986CB; --primary-container-dark-indigo: #2A3353; --on-primary-container-dark-indigo: #C5CAE9;
+
+            /* Crimson Theme */
+            --primary-light-crimson: #C2185B; --primary-container-light-crimson: #FCE4EC; --on-primary-container-light-crimson: #AD1457;
+            --primary-dark-crimson: #F06292; --primary-container-dark-crimson: #5D1B32; --on-primary-container-dark-crimson: #F8BBD0;
+
+            --bg-light: #f9f5ff; --surface-light: #fff; --text-primary-light: #1c1b1f; --text-secondary-light: #5f5f6e; --outline-light: #d1c4e9; --scrim-light: rgba(0, 0, 0, 0.3); --error-light: #b00020;
+            --bg-dark: #121212; --surface-dark: #1e1e1e; --text-primary-dark: #e4e2e6; --text-secondary-dark: #a0a0b3; --outline-dark: #44444f; --scrim-dark: rgba(0, 0, 0, 0.5); --error-dark: #cf6679;
+        }
+
+        html[class*="light"] { --bg: var(--bg-light); --surface: var(--surface-light); --text-primary: var(--text-primary-light); --text-secondary: var(--text-secondary-light); --outline: var(--outline-light); --scrim: var(--scrim-light); --error: var(--error-light); }
+        html[class*="dark"] { --bg: var(--bg-dark); --surface: var(--surface-dark); --text-primary: var(--text-primary-dark); --text-secondary: var(--text-secondary-dark); --outline: var(--outline-dark); --scrim: var(--scrim-dark); --error: var(--error-dark); }
+        
+        html.theme-default.light { --primary: var(--primary-light-default); --primary-container: var(--primary-container-light-default); --on-primary-container: var(--on-primary-container-light-default); }
+        html.theme-default.dark { --primary: var(--primary-dark-default); --primary-container: var(--primary-container-dark-default); --on-primary-container: var(--on-primary-container-dark-default); }
+        html.theme-teal.light { --primary: var(--primary-light-teal); --primary-container: var(--primary-container-light-teal); --on-primary-container: var(--on-primary-container-light-teal); }
+        html.theme-teal.dark { --primary: var(--primary-dark-teal); --primary-container: var(--primary-container-dark-teal); --on-primary-container: var(--on-primary-container-dark-teal); }
+        html.theme-indigo.light { --primary: var(--primary-light-indigo); --primary-container: var(--primary-container-light-indigo); --on-primary-container: var(--on-primary-container-light-indigo); }
+        html.theme-indigo.dark { --primary: var(--primary-dark-indigo); --primary-container: var(--primary-container-dark-indigo); --on-primary-container: var(--on-primary-container-dark-indigo); }
+        html.theme-crimson.light { --primary: var(--primary-light-crimson); --primary-container: var(--primary-container-light-crimson); --on-primary-container: var(--on-primary-container-light-crimson); }
+        html.theme-crimson.dark { --primary: var(--primary-dark-crimson); --primary-container: var(--primary-container-dark-crimson); --on-primary-container: var(--on-primary-container-dark-crimson); }
+
+        body { background-color: var(--bg); color: var(--text-primary); font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: contain; transition: background-color 0.3s ease, color 0.3s ease; }
+        .transition-all-smooth { transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+        .transition-transform-smooth { transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+        .transition-opacity-smooth { transition: opacity 0.3s ease-in-out; }
+        .ripple-effect { position: relative; overflow: hidden; }
+        .ripple { position: absolute; border-radius: 50%; background-color: var(--primary); opacity: 0.2; transform: scale(0); animation: ripple-anim 0.6s linear; }
+        @keyframes ripple-anim { to { transform: scale(4); opacity: 0; } }
+        .spinner-border { opacity: 0 !important; position: absolute; top: 50%; left: 50%; width: 1.25rem; height: 1.25rem; margin-top: -0.625rem; margin-left: -0.625rem; display: inline-block; vertical-align: text-bottom; border: .2em solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spinner-border-anim .75s linear infinite; }
+        .is-loading .spinner-border { opacity: 1 !important; }
+        .is-loading > .btn-text, .is-loading > .material-icons, .is-loading > .material-icons-outlined { opacity: 0; }
+        @keyframes spinner-border-anim { to { transform: rotate(360deg); } }
+        @keyframes item-fade-in { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .bill-item-enter { animation: item-fade-in 0.5s cubic-bezier(0.4, 0, 0.2, 1) both; }
+        @keyframes skeleton-loading { 0% { background-color: rgba(121, 116, 126, 0.1); } 50% { background-color: rgba(121, 116, 126, 0.2); } 100% { background-color: rgba(121, 116, 126, 0.1); } }
+        .skeleton { opacity: 0.7; animation: skeleton-loading 1.5s ease-in-out infinite; background-color: var(--text-secondary); border-radius: 0.5rem; }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--primary)',
+                        'primary-container': 'var(--primary-container)',
+                        'on-primary-container': 'var(--on-primary-container)',
+                        surface: 'var(--surface)',
+                        'text-primary': 'var(--text-primary)',
+                        'text-secondary': 'var(--text-secondary)',
+                        outline: 'var(--outline)',
+                        error: 'var(--error)',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="antialiased">
+
+    <!-- Main App Container -->
+    <div class="max-w-4xl mx-auto px-4 flex flex-col min-h-screen">
+        <!-- Header -->
+        <header class="flex items-center justify-between py-4">
+            <div class="flex items-center gap-3">
+                <span class="material-icons text-primary text-3xl">local_pharmacy</span>
+                <h1 class="text-2xl font-bold text-text-primary">VPD Pharma</h1>
+            </div>
+            <div class="flex items-center gap-1">
+                <button id="exportPdfBtn" class="btn-icon ripple-effect" title="Export as PDF">
+                    <span class="material-icons-outlined">picture_as_pdf</span>
+                    <span class="spinner-border"></span>
+                </button>
+                <button id="theme-cycler" class="btn-icon ripple-effect" title="Change Theme">
+                    <span class="material-icons-outlined">palette</span>
+                </button>
+                <button id="theme-toggler" class="btn-icon ripple-effect" title="Toggle Light/Dark Mode">
+                    <span class="material-icons-outlined">brightness_6</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="pb-28 flex-grow">
+            <!-- Search Bar -->
+            <div class="relative mb-6">
+                <span class="material-icons-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary">search</span>
+                <input type="text" id="searchInput" class="w-full bg-surface border border-outline rounded-full py-3 pl-12 pr-4 text-text-primary placeholder-text-secondary focus:ring-2 focus:ring-primary focus:outline-none transition-all-smooth" placeholder="Search bills by party or number...">
+            </div>
+
+            <!-- Bill List -->
+            <ul id="billList" class="space-y-3"></ul>
+        </main>
+        
+        <!-- App Footer -->
+        <footer class="text-center py-4 text-sm text-text-secondary">
+            Created By Yash K Pathak
+        </footer>
+    </div>
+
+    <!-- FAB -->
+    <button id="addBillFab" class="fab ripple-effect fixed bottom-6 right-6 h-14 w-14 bg-primary-container rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all-smooth transform hover:scale-105">
+        <span class="material-icons text-on-primary-container text-3xl">add</span>
+    </button>
+
+    <!-- Scrim -->
+    <div id="scrim" class="fixed inset-0 bg-scrim opacity-0 pointer-events-none transition-opacity-smooth z-40"></div>
+
+    <!-- Bottom Sheet Form -->
+    <div id="formBottomSheet" class="fixed bottom-0 left-0 right-0 bg-surface rounded-t-3xl p-4 pt-3 shadow-2xl z-50 transform translate-y-full transition-transform-smooth max-h-[85vh] overflow-y-auto">
+        <div class="w-10 h-1 bg-outline rounded-full mx-auto mb-4"></div>
+        <h2 id="formModalLabel" class="text-xl font-bold text-text-primary mb-6">Add New Bill</h2>
+        <form id="billForm" class="space-y-4">
+            <input type="hidden" id="billId">
+            <div><label for="billNumber" class="text-sm font-medium text-text-secondary ml-2">Bill Number</label><input type="text" id="billNumber" class="form-input" placeholder="e.g., INV-2025-001" required></div>
+            <div><label for="partyName" class="text-sm font-medium text-text-secondary ml-2">Party Name</label><input type="text" id="partyName" class="form-input" placeholder="e.g., Global Health Inc." required></div>
+            <div><label for="date" class="text-sm font-medium text-text-secondary ml-2">Date</label><input type="date" id="date" class="form-input" required></div>
+            <div><label for="note" class="text-sm font-medium text-text-secondary ml-2">Note (Optional)</label><textarea id="note" class="form-input" rows="3" placeholder="Add any relevant notes..."></textarea></div>
+            <div class="pt-4"><button type="submit" id="submitBtn" class="btn btn-primary w-full ripple-effect"><span class="btn-text">Save Bill</span><span class="spinner-border"></span></button></div>
+        </form>
+    </div>
+    
+    <!-- Confirmation Dialog -->
+    <div id="confirmDialogContainer" class="fixed inset-0 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity-smooth">
+        <div id="confirmDialog" class="bg-surface rounded-3xl p-6 w-full max-w-sm shadow-2xl transform scale-95 transition-transform-smooth">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center"><span class="material-icons-outlined text-red-600">delete_forever</span></div>
+                <div><h2 id="confirmDialogTitle" class="text-lg font-bold text-text-primary">Delete Bill?</h2></div>
+            </div>
+            <p id="confirmDialogContent" class="text-text-secondary mb-6">This action is permanent and cannot be undone.</p>
+            <div class="flex justify-end gap-2"><button id="confirmCancelBtn" class="btn btn-text ripple-effect">Cancel</button><button id="confirmOkBtn" class="btn btn-danger ripple-effect">Delete</button></div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-24 sm:bottom-6 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center gap-2"></div>
+
+    <!-- Reusable CSS classes for JS -->
+    <template id="class-templates">
+        <div class="btn-icon h-10 w-10 flex items-center justify-center rounded-full text-text-secondary hover:bg-black/5 dark:hover:bg-white/10 transition-colors"></div>
+        <div class="form-input mt-1 w-full bg-white/50 dark:bg-black/20 border border-outline rounded-xl py-3 px-4 text-text-primary placeholder-text-secondary focus:ring-2 focus:ring-primary focus:outline-none transition-all-smooth"></div>
+        <div class="btn h-12 px-6 flex items-center justify-center rounded-full font-semibold transition-all-smooth"></div>
+        <div class="btn-primary bg-primary text-white hover:opacity-90"></div>
+        <div class="btn-text text-primary hover:bg-primary-container/50"></div>
+        <div class="btn-danger bg-error text-white hover:opacity-90"></div>
+    </template>
+
+    <script>
+    (function() {
+        "use strict";
+
+        const $ = { // DOM Cache
+            doc: document.documentElement, body: document.body, billList: document.getElementById('billList'),
+            searchInput: document.getElementById('searchInput'), themeToggler: document.getElementById('theme-toggler'),
+            themeCycler: document.getElementById('theme-cycler'), exportPdfBtn: document.getElementById('exportPdfBtn'),
+            addBillFab: document.getElementById('addBillFab'), scrim: document.getElementById('scrim'),
+            formSheet: document.getElementById('formBottomSheet'), billForm: document.getElementById('billForm'),
+            formModalLabel: document.getElementById('formModalLabel'), submitBtn: document.getElementById('submitBtn'),
+            billId: document.getElementById('billId'), billNumber: document.getElementById('billNumber'),
+            partyName: document.getElementById('partyName'), date: document.getElementById('date'), note: document.getElementById('note'),
+            confirmDialogContainer: document.getElementById('confirmDialogContainer'), confirmDialog: document.getElementById('confirmDialog'),
+            confirmDialogTitle: document.getElementById('confirmDialogTitle'), confirmDialogContent: document.getElementById('confirmDialogContent'),
+            confirmOkBtn: document.getElementById('confirmOkBtn'), confirmCancelBtn: document.getElementById('confirmCancelBtn'),
+            toastContainer: document.getElementById('toast-container'), classTemplates: document.getElementById('class-templates'),
+        };
+
+        // --- App State & Config ---
+        let db;
+        const THEMES = ['default', 'teal', 'indigo', 'crimson'];
+        let currentTheme = {
+            name: 'default',
+            mode: 'light'
+        };
+        const PDF_THEME_COLORS = {
+            default: { light: { primary: '#673ab7', tableHeadBg: '#ede7f6', tableHeadText: '#5e35b1' }, dark: { primary: '#bb86fc', tableHeadBg: '#372a4f', tableHeadText: '#e0cffc' } },
+            teal: { light: { primary: '#00796B', tableHeadBg: '#E0F2F1', tableHeadText: '#00695C' }, dark: { primary: '#4DB6AC', tableHeadBg: '#264D49', tableHeadText: '#B2DFDB' } },
+            indigo: { light: { primary: '#3F51B5', tableHeadBg: '#E8EAF6', tableHeadText: '#3949AB' }, dark: { primary: '#7986CB', tableHeadBg: '#2A3353', tableHeadText: '#C5CAE9' } },
+            crimson: { light: { primary: '#C2185B', tableHeadBg: '#FCE4EC', tableHeadText: '#AD1457' }, dark: { primary: '#F06292', tableHeadBg: '#5D1B32', tableHeadText: '#F8BBD0' } }
+        };
+
+        // --- Utility Functions ---
+        const Utils = {
+            loadScript: src => new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = src; s.onload = resolve; s.onerror = reject; document.head.appendChild(s); }),
+            debounce: (func, delay = 300) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => func.apply(this, a), delay); }; },
+            hapticFeedback: (s = 'light') => { if (navigator.vibrate) navigator.vibrate({ light: [20], success: [0, 30, 40, 10], heavy: [50] }[s] || [20]); },
+            getClasses: (n) => $.classTemplates.content.querySelector(`.${n}`).classList.value
+        };
+
+        // --- Database Manager ---
+        const DBMgr = {
+            init: () => new Promise((rs, rj) => { const r = indexedDB.open('VPDPharma_FusionDB_v4', 1); r.onupgradeneeded = e => e.target.result.createObjectStore('bills', { keyPath: 'id', autoIncrement: true }); r.onsuccess = e => rs(e.target.result); r.onerror = e => rj(e.target.errorCode); }),
+            getAll: () => new Promise(rs => db.transaction(['bills'], 'readonly').objectStore('bills').getAll().onsuccess = e => rs(e.target.result.reverse())),
+            get: id => new Promise(rs => db.transaction(['bills'], 'readonly').objectStore('bills').get(id).onsuccess = e => rs(e.target.result)),
+            save: bill => new Promise(rs => db.transaction(['bills'], 'readwrite').objectStore('bills').put(bill).onsuccess = rs),
+            delete: id => new Promise(rs => db.transaction(['bills'], 'readwrite').objectStore('bills').delete(id).onsuccess = rs)
+        };
+
+        // --- UI Manager ---
+        const UI = {
+            init: async () => {
+                try {
+                    currentTheme.name = localStorage.getItem('themeName') || 'default';
+                    currentTheme.mode = localStorage.getItem('themeMode') || 'light';
+                    UI.setTheme(currentTheme.name, currentTheme.mode, true);
+                    UI.applyTemplateClasses();
+                    UI.initEventListeners();
+                    UI.showSkeletonLoader();
+                    db = await DBMgr.init();
+                    await UI.refreshList();
+                } catch (e) { console.error("Critical Init Error:", e); UI.showToast("Application failed to start.", "error"); }
+            },
+            applyTemplateClasses: () => {
+                $.exportPdfBtn.className = Utils.getClasses('btn-icon');
+                $.themeToggler.className = Utils.getClasses('btn-icon');
+                $.themeCycler.className = Utils.getClasses('btn-icon');
+                ['billNumber', 'partyName', 'date', 'note'].forEach(id => document.getElementById(id).className = Utils.getClasses('form-input'));
+                $.submitBtn.className = `${Utils.getClasses('btn')} ${Utils.getClasses('btn-primary')} w-full ripple-effect`;
+                $.confirmCancelBtn.className = `${Utils.getClasses('btn')} ${Utils.getClasses('btn-text')} ripple-effect`;
+                $.confirmOkBtn.className = `${Utils.getClasses('btn')} ${Utils.getClasses('btn-danger')} ripple-effect`;
+            },
+            refreshList: async () => {
+                const bills = await DBMgr.getAll();
+                const searchTerm = $.searchInput.value.toLowerCase().trim();
+                const filteredBills = bills.filter(bill => `${bill.partyName} ${bill.billNumber}`.toLowerCase().includes(searchTerm));
+                UI.renderList(filteredBills, bills.length > 0);
+            },
+            renderList: (billsToRender, hasAnyBills) => {
+                const list = $.billList;
+                if (billsToRender.length === 0) { list.innerHTML = `<li class='text-center text-text-secondary py-16 px-4'>${hasAnyBills ? 'No bills match your search.' : 'No bills recorded yet. Tap + to add one!'}</li>`; return; }
+                const existingIds = new Set([...list.children].map(el => el.dataset.id));
+                const newIds = new Set(billsToRender.map(b => String(b.id)));
+                for (const child of list.children) if (!newIds.has(child.dataset.id)) child.remove();
+                billsToRender.forEach((bill, i) => {
+                    let item = list.querySelector(`[data-id='${bill.id}']`);
+                    if (!item) { item = UI.createBillItemElement(bill); item.style.setProperty('--stagger-delay', `${i * 50}ms`); list.appendChild(item); }
+                });
+            },
+            createBillItemElement: bill => {
+                const item = document.createElement('li');
+                item.className = 'bill-item-enter bg-surface rounded-2xl p-4 flex items-center justify-between shadow-sm border border-transparent hover:border-outline transition-all duration-300';
+                item.dataset.id = bill.id;
+                const formattedDate = new Date(bill.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                item.innerHTML = `<div class="flex-1 min-w-0"><p class="font-semibold text-text-primary truncate">${bill.partyName}</p><p class="text-sm text-text-secondary">${bill.billNumber} &bull; ${formattedDate}</p></div><div class="flex items-center ml-2"><button class="edit-btn ${Utils.getClasses('btn-icon')} ripple-effect" aria-label="Edit Bill"><span class="material-icons-outlined text-lg">edit</span></button><button class="delete-btn ${Utils.getClasses('btn-icon')} ripple-effect" aria-label="Delete Bill"><span class="material-icons-outlined text-lg text-error">delete</span></button></div></div>`;
+                return item;
+            },
+            showSkeletonLoader: () => {
+                let s = ''; for (let i = 0; i < 5; i++) s += `<li class="bg-surface rounded-2xl p-4 space-y-3"><div class="skeleton h-5 w-3/5"></div><div class="skeleton h-4 w-2/5"></div></li>`;
+                $.billList.innerHTML = s;
+            },
+            toggleButtonLoading: (btn, isLoading) => { btn.disabled = isLoading; btn.classList.toggle('is-loading', isLoading); },
+            setTheme: (name, mode, isInitial = false) => {
+                $.doc.className = `theme-${name} ${mode}`;
+                const metaThemeColor = getComputedStyle($.body).getPropertyValue('--bg').trim();
+                document.querySelector('meta[name="theme-color"]').setAttribute('content', metaThemeColor);
+                if (!isInitial) { localStorage.setItem('themeName', name); localStorage.setItem('themeMode', mode); }
+            },
+            showToast: (message, type = 'success') => {
+                const t = document.createElement('div');
+                const isError = type === 'error';
+                t.className = `flex items-center ${isError ? 'bg-error' : 'bg-[#333] dark:bg-on-primary-container'} ${isError ? 'text-white' : 'text-white dark:text-primary-container'} py-2 px-4 rounded-full shadow-lg transform translate-y-4 opacity-0 transition-all duration-300 ease-out`;
+                t.innerHTML = `<span class="material-icons-outlined text-lg mr-2">${isError ? 'error_outline' : 'check_circle_outline'}</span><span class="text-sm font-medium">${message}</span>`;
+                $.toastContainer.appendChild(t);
+                setTimeout(() => { t.style.transform = 'translateY(0)'; t.style.opacity = '1'; }, 10);
+                setTimeout(() => { t.style.transform = 'translateY(4px)'; t.style.opacity = '0'; t.addEventListener('transitionend', () => t.remove()); }, 4000);
+            },
+            showConfirm: ({ title, content, onConfirm }) => {
+                $.confirmDialogTitle.textContent = title; $.confirmDialogContent.innerHTML = content;
+                $.confirmDialogContainer.classList.remove('opacity-0', 'pointer-events-none');
+                $.confirmDialog.classList.remove('scale-95'); $.scrim.classList.add('opacity-100', 'pointer-events-auto');
+                Utils.hapticFeedback('heavy');
+                const newOkBtn = $.confirmOkBtn.cloneNode(true); $.confirmOkBtn.parentNode.replaceChild(newOkBtn, $.confirmOkBtn); $.confirmOkBtn = newOkBtn;
+                newOkBtn.onclick = () => { onConfirm(); UI.hideConfirm(); };
+            },
+            hideConfirm: () => { $.confirmDialogContainer.classList.add('opacity-0', 'pointer-events-none'); $.confirmDialog.classList.add('scale-95'); $.scrim.classList.remove('opacity-100', 'pointer-events-auto'); },
+            showForm: (isEdit = false, bill = null) => {
+                $.submitBtn.querySelector('.btn-text').textContent = isEdit ? 'Update Bill' : 'Save Bill';
+                if (isEdit && bill) { $.billId.value = bill.id; $.billNumber.value = bill.billNumber; $.partyName.value = bill.partyName; $.date.value = bill.date; $.note.value = bill.note; $.formModalLabel.textContent = 'Edit Bill'; }
+                else { $.billForm.reset(); $.billId.value = ''; $.date.valueAsDate = new Date(); $.formModalLabel.textContent = 'Add New Bill'; }
+                $.formSheet.classList.remove('translate-y-full'); $.scrim.classList.add('opacity-100', 'pointer-events-auto'); $.addBillFab.classList.add('scale-0');
+            },
+            hideForm: () => { $.formSheet.classList.add('translate-y-full'); $.scrim.classList.remove('opacity-100', 'pointer-events-auto'); $.addBillFab.classList.remove('scale-0'); },
+            initEventListeners: () => {
+                $.body.addEventListener('click', e => { const t = e.target.closest('.ripple-effect'); if (t) { const r = document.createElement('span'); r.className = 'ripple'; const rect = t.getBoundingClientRect(); r.style.left = `${e.clientX - rect.left}px`; r.style.top = `${e.clientY - rect.top}px`; t.appendChild(r); r.addEventListener('animationend', () => r.remove()); } if (e.target.closest('.edit-btn')) Events.onEditClick(e.target.closest('.edit-btn')); if (e.target.closest('.delete-btn')) Events.onDeleteClick(e.target.closest('.delete-btn')); });
+                $.themeToggler.addEventListener('click', Events.onThemeToggle);
+                $.themeCycler.addEventListener('click', Events.onThemeCycle);
+                $.exportPdfBtn.addEventListener('click', Events.onExportClick);
+                $.searchInput.addEventListener('input', Utils.debounce(UI.refreshList, 300));
+                $.addBillFab.addEventListener('click', Events.onFabClick);
+                $.scrim.addEventListener('click', () => { UI.hideForm(); UI.hideConfirm(); });
+                $.billForm.addEventListener('submit', Events.onSubmit);
+                $.confirmCancelBtn.addEventListener('click', UI.hideConfirm);
+            }
+        };
+
+        // --- Event Handlers ---
+        const Events = {
+            onThemeToggle: () => { currentTheme.mode = currentTheme.mode === 'light' ? 'dark' : 'light'; UI.setTheme(currentTheme.name, currentTheme.mode); },
+            onThemeCycle: () => { const currentIndex = THEMES.indexOf(currentTheme.name); const nextIndex = (currentIndex + 1) % THEMES.length; currentTheme.name = THEMES[nextIndex]; UI.setTheme(currentTheme.name, currentTheme.mode); },
+            onFabClick: () => { Utils.hapticFeedback(); UI.showForm(); },
+            onSubmit: async (e) => {
+                e.preventDefault(); if (!$.billForm.checkValidity()) { UI.showToast("Please fill all required fields.", "error"); return; }
+                UI.toggleButtonLoading($.submitBtn, true);
+                const billData = { billNumber: $.billNumber.value.trim(), partyName: $.partyName.value.trim(), date: $.date.value, note: $.note.value.trim() };
+                const billId = $.billId.value; if (billId) billData.id = parseInt(billId);
+                await DBMgr.save(billData); UI.hideForm(); Utils.hapticFeedback('success'); UI.showToast(`Bill ${billId ? 'updated' : 'saved'} successfully!`); await UI.refreshList(); UI.toggleButtonLoading($.submitBtn, false);
+            },
+            onEditClick: async (btn) => { const id = parseInt(btn.closest('li').dataset.id); const bill = await DBMgr.get(id); if (bill) UI.showForm(true, bill); },
+            onDeleteClick: (btn) => {
+                const item = btn.closest('li'); const id = parseInt(item.dataset.id);
+                UI.showConfirm({ title: 'Delete Bill?', content: 'This action is permanent and cannot be undone.', onConfirm: async () => { item.style.transition = 'all 0.3s ease'; item.style.transform = 'translateX(-100%)'; item.style.opacity = '0'; await DBMgr.delete(id); UI.showToast("Bill deleted.", "error"); setTimeout(() => { item.remove(); UI.refreshList(); }, 300); } });
+            },
+            onExportClick: async () => {
+                UI.toggleButtonLoading($.exportPdfBtn, true);
+                try {
+                    if (typeof window.jspdf === 'undefined') { await Utils.loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"); await Utils.loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"); }
+                    if (typeof window.jspdf.jsPDF === 'undefined') throw new Error("jsPDF not loaded correctly.");
+                    const bills = await DBMgr.getAll(); if (bills.length === 0) { UI.showToast("No data to export.", "error"); return; }
+                    const { jsPDF } = window.jspdf; const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+                    
+                    const theme = PDF_THEME_COLORS[currentTheme.name][currentTheme.mode];
+                    const commonColors = { text: currentTheme.mode === 'dark' ? '#E4E2E6' : '#1C1B1F', secondaryText: currentTheme.mode === 'dark' ? '#A0A0B3' : '#5F5F6E', headerBg: currentTheme.mode === 'dark' ? '#1E1E1E' : '#F8F9FA', tableBorder: currentTheme.mode === 'dark' ? '#44444f' : '#DEE2E6' };
+                    
+                    const pageWidth = doc.internal.pageSize.getWidth(); const pageHeight = doc.internal.pageSize.getHeight(); const margin = 15;
+                    doc.addFont('Helvetica', 'normal', 'normal'); doc.addFont('Helvetica', 'bold', 'bold');
+
+                    const bodyData = bills.map(b => [b.billNumber, b.partyName, new Date(b.date + 'T00:00:00').toLocaleDateString('en-GB'), b.note || '-']);
+                    doc.autoTable({
+                        head: [['Bill Number', 'Party Name', 'Date', 'Note']], body: bodyData, startY: 45, margin: { left: margin, right: margin }, theme: 'grid',
+                        styles: { font: 'Helvetica', fontSize: 9, cellPadding: 2.5, textColor: commonColors.text, lineColor: commonColors.tableBorder, lineWidth: 0.1 },
+                        headStyles: { fillColor: theme.tableHeadBg, textColor: theme.tableHeadText, fontStyle: 'bold', fontSize: 10, halign: 'center' },
+                        alternateRowStyles: { fillColor: currentTheme.mode === 'dark' ? '#1e1e1e' : '#f9f5ff' },
+                        didDrawPage: (data) => {
+                            doc.setFillColor(commonColors.headerBg); doc.rect(0, 0, pageWidth, 35, 'F');
+                            doc.setFont('Helvetica', 'bold'); doc.setFontSize(18); doc.setTextColor(theme.primary); doc.text("VPD Pharma", margin, 22);
+                            doc.setFont('Helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(commonColors.secondaryText);
+                            doc.text("Bill History Report", pageWidth - margin, 18, { align: 'right' });
+                            doc.text(`Generated: ${new Date().toLocaleDateString('en-GB')}`, pageWidth - margin, 24, { align: 'right' });
+                            
+                            const pageCount = doc.internal.getNumberOfPages();
+                            doc.setFontSize(8); doc.setTextColor(commonColors.secondaryText);
+                            doc.text("Created By Yash K Pathak", margin, pageHeight - 10);
+                            doc.text(`Page ${data.pageNumber} of ${pageCount}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
+                        },
+                    });
+                    doc.save(`VPD_Pharma_Report_${new Date().toISOString().slice(0, 10)}.pdf`);
+                } catch (err) { console.error("PDF Export Error:", err); UI.showToast("Error creating PDF.", "error");
+                } finally { UI.toggleButtonLoading($.exportPdfBtn, false); }
+            }
+        };
+        document.addEventListener('DOMContentLoaded', UI.init);
+    })();
+    </script>
+</body>
+</html>
+
