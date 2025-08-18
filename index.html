@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VPD Pharma - Fusion</title>
+    <title>નીલકંઠ એપાર્ટમેન્ટ - રસીદ બુક</title>
 
     <!-- PWA & Mobile Meta Tags -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -18,6 +18,7 @@
     <!-- Google Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
@@ -74,6 +75,8 @@
         .bill-item-enter { animation: item-fade-in 0.5s cubic-bezier(0.4, 0, 0.2, 1) both; }
         @keyframes skeleton-loading { 0% { background-color: rgba(121, 116, 126, 0.1); } 50% { background-color: rgba(121, 116, 126, 0.2); } 100% { background-color: rgba(121, 116, 126, 0.1); } }
         .skeleton { opacity: 0.7; animation: skeleton-loading 1.5s ease-in-out infinite; background-color: var(--text-secondary); border-radius: 0.5rem; }
+        @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
+        .animate-shake { animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both; }
     </style>
     <script>
         tailwind.config = {
@@ -95,19 +98,55 @@
     </script>
 </head>
 <body class="antialiased">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="fixed inset-0 bg-bg flex items-center justify-center z-[100]">
+        <div class="w-full max-w-sm p-8 bg-surface rounded-3xl shadow-2xl">
+            <div class="text-center mb-6">
+                <span class="material-icons text-primary text-5xl">apartment</span>
+                <h1 class="text-2xl font-bold text-text-primary mt-2">Admin Login</h1>
+                <p class="text-text-secondary">Please log in to continue</p>
+            </div>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label for="username" class="text-sm font-medium text-text-secondary ml-2">Username</label>
+                    <input type="text" id="username" class="form-input" required>
+                </div>
+                <div>
+                    <label for="password" class="text-sm font-medium text-text-secondary ml-2">Password</label>
+                    <input type="password" id="password" class="form-input" required>
+                </div>
+                <div class="pt-4">
+                    <button type="submit" id="loginBtn" class="btn btn-primary w-full ripple-effect">
+                        <span class="btn-text">Login</span>
+                        <span class="spinner-border"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Main App Container -->
-    <div class="max-w-4xl mx-auto px-4 flex flex-col min-h-screen">
+    <div id="appContainer" class="max-w-4xl mx-auto px-4 flex flex-col min-h-screen hidden">
         <!-- Header -->
-        <header class="flex items-center justify-between py-4">
-            <div class="flex items-center gap-3">
-                <span class="material-icons text-primary text-3xl">local_pharmacy</span>
-                <h1 class="text-2xl font-bold text-text-primary">VPD Pharma</h1>
+        <header class="flex items-center justify-between py-4 gap-4">
+            <div class="flex-shrink-0">
+                <span class="material-icons text-primary text-4xl">apartment</span>
+            </div>
+            <div class="flex-grow text-center">
+                <h1 class="text-lg font-bold text-primary">નીલકંઠ એપાર્ટમેન્ટ વિભાગ -૧</h1>
+                <p class="text-sm font-medium text-text-primary">કો.ઓપ. હાઉસિંગ સર્વિસ સોસાયટી લિ.</p>
+                <p class="text-xs text-text-secondary">બ્લોક નંબર ૧ થી ૬, EWS-51.આઈ.સી.બી આઈલેન્ડની બાજુમાં વંદે માતરમ ચાર રસ્તા નજીક ગોતા, અમદાવાદ</p>
+                <p class="text-xs text-text-secondary font-mono mt-1">REG.NO CSAHDCSAHAA202500987</p>
             </div>
             <div class="flex items-center gap-1">
-                <button id="exportPdfBtn" class="btn-icon ripple-effect" title="Export as PDF">
-                    <span class="material-icons-outlined">picture_as_pdf</span>
-                    <span class="spinner-border"></span>
+                <button id="exportExcelBtn" class="btn-icon ripple-effect" title="Export as Excel">
+                    <span class="material-icons-outlined">table_view</span>
+                </button>
+                <button id="exportPdfBtn" class="btn-icon ripple-effect" title="Export Summary PDF">
+                    <span class="material-icons-outlined">summarize</span>
+                </button>
+                <button id="settingsBtn" class="btn-icon ripple-effect" title="Settings">
+                    <span class="material-icons-outlined">settings</span>
                 </button>
                 <button id="theme-cycler" class="btn-icon ripple-effect" title="Change Theme">
                     <span class="material-icons-outlined">palette</span>
@@ -121,13 +160,18 @@
         <!-- Main Content -->
         <main class="pb-28 flex-grow">
             <!-- Search Bar -->
-            <div class="relative mb-6">
+            <div class="relative mb-4">
                 <span class="material-icons-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary">search</span>
-                <input type="text" id="searchInput" class="w-full bg-surface border border-outline rounded-full py-3 pl-12 pr-4 text-text-primary placeholder-text-secondary focus:ring-2 focus:ring-primary focus:outline-none transition-all-smooth" placeholder="Search bills by party or number...">
+                <input type="text" id="searchInput" class="w-full bg-surface border border-outline rounded-full py-3 pl-12 pr-4 text-text-primary placeholder-text-secondary focus:ring-2 focus:ring-primary focus:outline-none transition-all-smooth" placeholder="Search by member name or receipt number...">
             </div>
 
-            <!-- Bill List -->
-            <ul id="billList" class="space-y-3"></ul>
+            <!-- Grand Total -->
+            <div id="grandTotal" class="bg-primary-container text-on-primary-container rounded-xl p-4 mb-4 text-center font-bold text-lg">
+                Loading...
+            </div>
+
+            <!-- Receipt List -->
+            <ul id="receiptList" class="space-y-3"></ul>
         </main>
         
         <!-- App Footer -->
@@ -137,24 +181,105 @@
     </div>
 
     <!-- FAB -->
-    <button id="addBillFab" class="fab ripple-effect fixed bottom-6 right-6 h-14 w-14 bg-primary-container rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all-smooth transform hover:scale-105">
+    <button id="addReceiptFab" class="fab ripple-effect fixed bottom-6 right-6 h-14 w-14 bg-primary-container rounded-2xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all-smooth transform hover:scale-105">
         <span class="material-icons text-on-primary-container text-3xl">add</span>
     </button>
 
     <!-- Scrim -->
     <div id="scrim" class="fixed inset-0 bg-scrim opacity-0 pointer-events-none transition-opacity-smooth z-40"></div>
 
+    <!-- Settings Bottom Sheet -->
+    <div id="settingsSheet" class="fixed bottom-0 left-0 right-0 bg-surface rounded-t-3xl p-4 pt-3 shadow-2xl z-50 transform translate-y-full transition-transform-smooth max-h-[85vh] overflow-y-auto">
+        <div class="w-10 h-1 bg-outline rounded-full mx-auto mb-4 cursor-pointer" onclick="UI.hideSettings()"></div>
+        <h2 class="text-xl font-bold text-text-primary mb-6">Settings</h2>
+
+        <div class="space-y-6">
+            <!-- Admin Profile Section -->
+            <div>
+                <h3 class="text-lg font-semibold text-primary mb-2 border-b border-outline pb-1">Admin Profile</h3>
+                <form id="profileForm" class="space-y-4 mt-4">
+                    <div>
+                        <label for="adminName" class="text-sm font-medium text-text-secondary ml-2">Authorised Name (for Receipts)</label>
+                        <input type="text" id="adminName" class="form-input" placeholder="e.g., Yash K Pathak">
+                    </div>
+                    <div>
+                        <label for="blockNumber" class="text-sm font-medium text-text-secondary ml-2">Block Number</label>
+                        <input type="text" id="blockNumber" class="form-input" placeholder="e.g., A-101">
+                    </div>
+                    <div class="pt-2"><button type="submit" id="saveProfileBtn" class="btn btn-primary w-full ripple-effect"><span class="btn-text">Save Profile</span><span class="spinner-border"></span></button></div>
+                </form>
+            </div>
+
+            <!-- Signature Section -->
+            <div>
+                <h3 class="text-lg font-semibold text-primary mb-2 border-b border-outline pb-1">Signature</h3>
+                <div class="mt-4">
+                    <div class="flex border-b border-outline">
+                        <button id="sigTabType" class="sig-tab-btn flex-1 p-2 text-center font-semibold border-b-2 border-primary text-primary">Type</button>
+                        <button id="sigTabDraw" class="sig-tab-btn flex-1 p-2 text-center font-semibold border-b-2 border-transparent text-text-secondary">Draw</button>
+                        <button id="sigTabUpload" class="sig-tab-btn flex-1 p-2 text-center font-semibold border-b-2 border-transparent text-text-secondary">Upload</button>
+                    </div>
+                    <div class="p-2">
+                        <div id="sigPanelType">
+                            <p class="text-sm text-text-secondary mb-2">Generates a signature from your saved Authorised Name.</p>
+                            <div id="sigPreviewType" class="bg-primary-container/20 p-4 rounded-lg text-center text-text-primary font-semibold text-3xl" style="font-family: 'Dancing Script', cursive;"></div>
+                            <button id="sigSaveTypeBtn" class="btn btn-primary w-full mt-2 ripple-effect">Use Typed Signature</button>
+                        </div>
+                        <div id="sigPanelDraw" class="hidden">
+                            <p class="text-sm text-text-secondary mb-2">Draw your signature in the box below:</p>
+                            <canvas id="sigCanvas" class="w-full h-40 bg-gray-100 dark:bg-gray-800 border border-outline rounded-lg"></canvas>
+                            <div class="flex gap-2 mt-2">
+                                <button id="sigClearBtn" class="btn btn-text flex-1 ripple-effect">Clear</button>
+                                <button id="sigSaveDrawBtn" class="btn btn-primary flex-1 ripple-effect">Save Drawing</button>
+                            </div>
+                        </div>
+                        <div id="sigPanelUpload" class="hidden">
+                            <p class="text-sm text-text-secondary mb-2">Upload an image of your signature:</p>
+                            <input type="file" id="sigUploadInput" class="form-input" accept="image/png, image/jpeg">
+                            <p class="text-xs text-text-secondary mt-1">Recommended: Transparent PNG, less than 200KB.</p>
+                            <img id="sigPreviewUpload" class="hidden mt-2 max-h-24 mx-auto bg-white p-2 rounded">
+                        </div>
+                    </div>
+                    <div class="mt-4 p-2 border-t border-outline">
+                        <h4 class="font-semibold text-text-primary">Current Saved Signature:</h4>
+                        <div id="currentSigPreview" class="mt-2 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 min-h-[5rem] flex items-center justify-center">
+                            <img id="currentSigImg" class="max-h-20" style="filter: invert(var(--is-dark));">
+                        </div>
+                        <button id="removeSigBtn" class="btn btn-danger w-full mt-2 ripple-effect hidden">Remove Signature</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Change Password Section -->
+            <div>
+                <h3 class="text-lg font-semibold text-primary mb-2 border-b border-outline pb-1">Security</h3>
+                <form id="passwordForm" class="space-y-4 mt-4">
+                    <div>
+                        <label for="newPassword" class="text-sm font-medium text-text-secondary ml-2">New Password</label>
+                        <input type="password" id="newPassword" class="form-input" required>
+                    </div>
+                    <div>
+                        <label for="confirmPassword" class="text-sm font-medium text-text-secondary ml-2">Confirm New Password</label>
+                        <input type="password" id="confirmPassword" class="form-input" required>
+                    </div>
+                    <div class="pt-2"><button type="submit" id="savePasswordBtn" class="btn btn-primary w-full ripple-effect"><span class="btn-text">Change Password</span><span class="spinner-border"></span></button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Bottom Sheet Form -->
-    <div id="formBottomSheet" class="fixed bottom-0 left-0 right-0 bg-surface rounded-t-3xl p-4 pt-3 shadow-2xl z-50 transform translate-y-full transition-transform-smooth max-h-[85vh] overflow-y-auto">
-        <div class="w-10 h-1 bg-outline rounded-full mx-auto mb-4"></div>
-        <h2 id="formModalLabel" class="text-xl font-bold text-text-primary mb-6">Add New Bill</h2>
-        <form id="billForm" class="space-y-4">
-            <input type="hidden" id="billId">
-            <div><label for="billNumber" class="text-sm font-medium text-text-secondary ml-2">Bill Number</label><input type="text" id="billNumber" class="form-input" placeholder="e.g., INV-2025-001" required></div>
-            <div><label for="partyName" class="text-sm font-medium text-text-secondary ml-2">Party Name</label><input type="text" id="partyName" class="form-input" placeholder="e.g., Global Health Inc." required></div>
+    <div id="receiptFormSheet" class="fixed bottom-0 left-0 right-0 bg-surface rounded-t-3xl p-4 pt-3 shadow-2xl z-50 transform translate-y-full transition-transform-smooth max-h-[85vh] overflow-y-auto">
+        <div class="w-10 h-1 bg-outline rounded-full mx-auto mb-4 cursor-pointer" onclick="UI.hideForm()"></div>
+        <h2 id="formModalLabel" class="text-xl font-bold text-text-primary mb-6">Add New Receipt</h2>
+        <form id="receiptForm" class="space-y-4">
+            <input type="hidden" id="receiptId">
+            <div><label for="receiptNumber" class="text-sm font-medium text-text-secondary ml-2">Receipt Number</label><input type="text" id="receiptNumber" class="form-input" placeholder="e.g., 001" required></div>
+            <div><label for="memberName" class="text-sm font-medium text-text-secondary ml-2">Member Name</label><input type="text" id="memberName" class="form-input" placeholder="e.g., John Doe" required></div>
+            <div><label for="amount" class="text-sm font-medium text-text-secondary ml-2">Amount (₹)</label><input type="number" id="amount" class="form-input" placeholder="e.g., 1500" required></div>
             <div><label for="date" class="text-sm font-medium text-text-secondary ml-2">Date</label><input type="date" id="date" class="form-input" required></div>
-            <div><label for="note" class="text-sm font-medium text-text-secondary ml-2">Note (Optional)</label><textarea id="note" class="form-input" rows="3" placeholder="Add any relevant notes..."></textarea></div>
-            <div class="pt-4"><button type="submit" id="submitBtn" class="btn btn-primary w-full ripple-effect"><span class="btn-text">Save Bill</span><span class="spinner-border"></span></button></div>
+            <div><label for="note" class="text-sm font-medium text-text-secondary ml-2">Note (Optional)</label><textarea id="note" class="form-input" rows="2" placeholder="e.g., Maintenance for May"></textarea></div>
+            <div class="pt-4"><button type="submit" id="submitBtn" class="btn btn-primary w-full ripple-effect"><span class="btn-text">Save Receipt</span><span class="spinner-border"></span></button></div>
         </form>
     </div>
     
@@ -163,7 +288,7 @@
         <div id="confirmDialog" class="bg-surface rounded-3xl p-6 w-full max-w-sm shadow-2xl transform scale-95 transition-transform-smooth">
             <div class="flex items-center gap-4 mb-4">
                 <div class="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center"><span class="material-icons-outlined text-red-600">delete_forever</span></div>
-                <div><h2 id="confirmDialogTitle" class="text-lg font-bold text-text-primary">Delete Bill?</h2></div>
+                <div><h2 id="confirmDialogTitle" class="text-lg font-bold text-text-primary">Delete Receipt?</h2></div>
             </div>
             <p id="confirmDialogContent" class="text-text-secondary mb-6">This action is permanent and cannot be undone.</p>
             <div class="flex justify-end gap-2"><button id="confirmCancelBtn" class="btn btn-text ripple-effect">Cancel</button><button id="confirmOkBtn" class="btn btn-danger ripple-effect">Delete</button></div>
@@ -188,14 +313,30 @@
         "use strict";
 
         const $ = { // DOM Cache
-            doc: document.documentElement, body: document.body, billList: document.getElementById('billList'),
+            doc: document.documentElement, body: document.body,
+            appContainer: document.getElementById('appContainer'),
+            loginScreen: document.getElementById('loginScreen'), loginForm: document.getElementById('loginForm'),
+            username: document.getElementById('username'), password: document.getElementById('password'), loginBtn: document.getElementById('loginBtn'),
+            receiptList: document.getElementById('receiptList'),
             searchInput: document.getElementById('searchInput'), themeToggler: document.getElementById('theme-toggler'),
             themeCycler: document.getElementById('theme-cycler'), exportPdfBtn: document.getElementById('exportPdfBtn'),
-            addBillFab: document.getElementById('addBillFab'), scrim: document.getElementById('scrim'),
-            formSheet: document.getElementById('formBottomSheet'), billForm: document.getElementById('billForm'),
+            exportExcelBtn: document.getElementById('exportExcelBtn'),
+            settingsBtn: document.getElementById('settingsBtn'),
+            addReceiptFab: document.getElementById('addReceiptFab'), scrim: document.getElementById('scrim'),
+            receiptFormSheet: document.getElementById('receiptFormSheet'), receiptForm: document.getElementById('receiptForm'),
             formModalLabel: document.getElementById('formModalLabel'), submitBtn: document.getElementById('submitBtn'),
-            billId: document.getElementById('billId'), billNumber: document.getElementById('billNumber'),
-            partyName: document.getElementById('partyName'), date: document.getElementById('date'), note: document.getElementById('note'),
+            receiptId: document.getElementById('receiptId'), receiptNumber: document.getElementById('receiptNumber'),
+            memberName: document.getElementById('memberName'), date: document.getElementById('date'), amount: document.getElementById('amount'), note: document.getElementById('note'),
+            grandTotal: document.getElementById('grandTotal'),
+            settingsSheet: document.getElementById('settingsSheet'),
+            profileForm: document.getElementById('profileForm'), adminName: document.getElementById('adminName'), blockNumber: document.getElementById('blockNumber'), saveProfileBtn: document.getElementById('saveProfileBtn'),
+            passwordForm: document.getElementById('passwordForm'), newPassword: document.getElementById('newPassword'), confirmPassword: document.getElementById('confirmPassword'), savePasswordBtn: document.getElementById('savePasswordBtn'),
+            sigTabType: document.getElementById('sigTabType'), sigTabDraw: document.getElementById('sigTabDraw'), sigTabUpload: document.getElementById('sigTabUpload'),
+            sigPanelType: document.getElementById('sigPanelType'), sigPanelDraw: document.getElementById('sigPanelDraw'), sigPanelUpload: document.getElementById('sigPanelUpload'),
+            sigPreviewType: document.getElementById('sigPreviewType'), sigSaveTypeBtn: document.getElementById('sigSaveTypeBtn'),
+            sigCanvas: document.getElementById('sigCanvas'), sigClearBtn: document.getElementById('sigClearBtn'), sigSaveDrawBtn: document.getElementById('sigSaveDrawBtn'),
+            sigUploadInput: document.getElementById('sigUploadInput'), sigPreviewUpload: document.getElementById('sigPreviewUpload'),
+            currentSigPreview: document.getElementById('currentSigPreview'), currentSigImg: document.getElementById('currentSigImg'), removeSigBtn: document.getElementById('removeSigBtn'),
             confirmDialogContainer: document.getElementById('confirmDialogContainer'), confirmDialog: document.getElementById('confirmDialog'),
             confirmDialogTitle: document.getElementById('confirmDialogTitle'), confirmDialogContent: document.getElementById('confirmDialogContent'),
             confirmOkBtn: document.getElementById('confirmOkBtn'), confirmCancelBtn: document.getElementById('confirmCancelBtn'),
@@ -209,6 +350,7 @@
             name: 'default',
             mode: 'light'
         };
+        let signaturePad;
         const PDF_THEME_COLORS = {
             default: { light: { primary: '#673ab7', tableHeadBg: '#ede7f6', tableHeadText: '#5e35b1' }, dark: { primary: '#bb86fc', tableHeadBg: '#372a4f', tableHeadText: '#e0cffc' } },
             teal: { light: { primary: '#00796B', tableHeadBg: '#E0F2F1', tableHeadText: '#00695C' }, dark: { primary: '#4DB6AC', tableHeadBg: '#264D49', tableHeadText: '#B2DFDB' } },
@@ -221,69 +363,130 @@
             loadScript: src => new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = src; s.onload = resolve; s.onerror = reject; document.head.appendChild(s); }),
             debounce: (func, delay = 300) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => func.apply(this, a), delay); }; },
             hapticFeedback: (s = 'light') => { if (navigator.vibrate) navigator.vibrate({ light: [20], success: [0, 30, 40, 10], heavy: [50] }[s] || [20]); },
-            getClasses: (n) => $.classTemplates.content.querySelector(`.${n}`).classList.value
+            getClasses: (n) => $.classTemplates.content.querySelector(`.${n}`).classList.value,
+            hash: async (str) => {
+                const buffer = new TextEncoder().encode(str);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            },
+            toWords: (num) => {
+                const a = ['','one ','two ','three ','four ', 'five ','six ','seven ','eight ','nine ','ten ','eleven ','twelve ','thirteen ','fourteen ','fifteen ','sixteen ','seventeen ','eighteen ','nineteen '];
+                const b = ['', '', 'twenty','thirty','forty','fifty', 'sixty','seventy','eighty','ninety'];
+                const n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+                if (!n) return '';
+                let str = '';
+                str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'crore ' : '';
+                str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'lakh ' : '';
+                str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'thousand ' : '';
+                str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'hundred ' : '';
+                str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) : '';
+                return str.trim().replace(/\s+/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.substr(1)).join(' ') + ' Only';
+            }
         };
 
         // --- Database Manager ---
         const DBMgr = {
-            init: () => new Promise((rs, rj) => { const r = indexedDB.open('VPDPharma_FusionDB_v4', 1); r.onupgradeneeded = e => e.target.result.createObjectStore('bills', { keyPath: 'id', autoIncrement: true }); r.onsuccess = e => rs(e.target.result); r.onerror = e => rj(e.target.errorCode); }),
-            getAll: () => new Promise(rs => db.transaction(['bills'], 'readonly').objectStore('bills').getAll().onsuccess = e => rs(e.target.result.reverse())),
-            get: id => new Promise(rs => db.transaction(['bills'], 'readonly').objectStore('bills').get(id).onsuccess = e => rs(e.target.result)),
-            save: bill => new Promise(rs => db.transaction(['bills'], 'readwrite').objectStore('bills').put(bill).onsuccess = rs),
-            delete: id => new Promise(rs => db.transaction(['bills'], 'readwrite').objectStore('bills').delete(id).onsuccess = rs)
+            init: () => new Promise((rs, rj) => { const r = indexedDB.open('NilkanthApartmentDB_v1', 1); r.onupgradeneeded = e => e.target.result.createObjectStore('receipts', { keyPath: 'id', autoIncrement: true }); r.onsuccess = e => rs(e.target.result); r.onerror = e => rj(e.target.errorCode); }),
+            getAll: () => new Promise(rs => db.transaction(['receipts'], 'readonly').objectStore('receipts').getAll().onsuccess = e => rs(e.target.result.reverse())),
+            get: id => new Promise(rs => db.transaction(['receipts'], 'readonly').objectStore('receipts').get(id).onsuccess = e => rs(e.target.result)),
+            save: receipt => new Promise(rs => db.transaction(['receipts'], 'readwrite').objectStore('receipts').put(receipt).onsuccess = rs),
+            delete: id => new Promise(rs => db.transaction(['receipts'], 'readwrite').objectStore('receipts').delete(id).onsuccess = rs)
         };
 
         // --- UI Manager ---
         const UI = {
             init: async () => {
+                UI.applyTemplateClasses();
+                UI.initEventListeners();
+                UI.setTheme(localStorage.getItem('themeName') || 'default', localStorage.getItem('themeMode') || 'light', true);
+
+                if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                    await UI.showApp();
+                } else {
+                    $.loginScreen.classList.remove('hidden');
+                    $.appContainer.classList.add('hidden');
+                }
+            },
+            showApp: async () => {
                 try {
-                    currentTheme.name = localStorage.getItem('themeName') || 'default';
-                    currentTheme.mode = localStorage.getItem('themeMode') || 'light';
-                    UI.setTheme(currentTheme.name, currentTheme.mode, true);
-                    UI.applyTemplateClasses();
-                    UI.initEventListeners();
+                    $.loginScreen.classList.add('hidden');
+                    $.appContainer.classList.remove('hidden');
+                    UI.loadProfile();
                     UI.showSkeletonLoader();
                     db = await DBMgr.init();
                     await UI.refreshList();
-                } catch (e) { console.error("Critical Init Error:", e); UI.showToast("Application failed to start.", "error"); }
+                } catch (e) {
+                    console.error("Critical App Init Error:", e);
+                    UI.showToast("Application failed to start.", "error");
+                }
             },
             applyTemplateClasses: () => {
                 $.exportPdfBtn.className = Utils.getClasses('btn-icon');
+                $.exportExcelBtn.className = Utils.getClasses('btn-icon');
+                $.settingsBtn.className = Utils.getClasses('btn-icon');
                 $.themeToggler.className = Utils.getClasses('btn-icon');
                 $.themeCycler.className = Utils.getClasses('btn-icon');
-                ['billNumber', 'partyName', 'date', 'note'].forEach(id => document.getElementById(id).className = Utils.getClasses('form-input'));
+                ['receiptNumber', 'memberName', 'date', 'note', 'amount', 'username', 'password', 'adminName', 'blockNumber', 'newPassword', 'confirmPassword'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.className = Utils.getClasses('form-input');
+                });
                 $.submitBtn.className = `${Utils.getClasses('btn')} ${Utils.getClasses('btn-primary')} w-full ripple-effect`;
+                $.saveProfileBtn.className = `${Utils.getClasses('btn')} ${Utils.getClasses('btn-primary')} w-full ripple-effect`;
+                $.savePasswordBtn.className = `${Utils.getClasses('btn')} ${Utils.getClasses('btn-primary')} w-full ripple-effect`;
+                $.sigSaveTypeBtn.className = `${Utils.getClasses('btn')} ${Utils.getClasses('btn-primary')} w-full ripple-effect`;
+                $.sigClearBtn.className = `${Utils.getClasses('btn')} ${Utils.getClasses('btn-text')} flex-1 ripple-effect`;
+                $.sigSaveDrawBtn.className = `${Utils.getClasses('btn')} ${Utils.getClasses('btn-primary')} flex-1 ripple-effect`;
+                $.removeSigBtn.className = `${Utils.getClasses('btn')} ${Utils.getClasses('btn-danger')} w-full mt-2 ripple-effect`;
+                $.loginBtn.className = `${Utils.getClasses('btn')} ${Utils.getClasses('btn-primary')} w-full ripple-effect`;
                 $.confirmCancelBtn.className = `${Utils.getClasses('btn')} ${Utils.getClasses('btn-text')} ripple-effect`;
                 $.confirmOkBtn.className = `${Utils.getClasses('btn')} ${Utils.getClasses('btn-danger')} ripple-effect`;
             },
             refreshList: async () => {
-                const bills = await DBMgr.getAll();
+                const receipts = await DBMgr.getAll();
                 const searchTerm = $.searchInput.value.toLowerCase().trim();
-                const filteredBills = bills.filter(bill => `${bill.partyName} ${bill.billNumber}`.toLowerCase().includes(searchTerm));
-                UI.renderList(filteredBills, bills.length > 0);
+                const filteredReceipts = receipts.filter(r => `${r.memberName} ${r.receiptNumber}`.toLowerCase().includes(searchTerm));
+                UI.renderList(filteredReceipts, receipts.length > 0);
+                UI.updateGrandTotal(receipts);
             },
-            renderList: (billsToRender, hasAnyBills) => {
-                const list = $.billList;
-                if (billsToRender.length === 0) { list.innerHTML = `<li class='text-center text-text-secondary py-16 px-4'>${hasAnyBills ? 'No bills match your search.' : 'No bills recorded yet. Tap + to add one!'}</li>`; return; }
+            renderList: (receiptsToRender, hasAnyReceipts) => {
+                const list = $.receiptList;
+                if (receiptsToRender.length === 0) { list.innerHTML = `<li class='text-center text-text-secondary py-16 px-4'>${hasAnyReceipts ? 'No receipts match your search.' : 'No receipts recorded yet. Tap + to add one!'}</li>`; return; }
                 const existingIds = new Set([...list.children].map(el => el.dataset.id));
-                const newIds = new Set(billsToRender.map(b => String(b.id)));
+                const newIds = new Set(receiptsToRender.map(r => String(r.id)));
                 for (const child of list.children) if (!newIds.has(child.dataset.id)) child.remove();
-                billsToRender.forEach((bill, i) => {
-                    let item = list.querySelector(`[data-id='${bill.id}']`);
-                    if (!item) { item = UI.createBillItemElement(bill); item.style.setProperty('--stagger-delay', `${i * 50}ms`); list.appendChild(item); }
+                receiptsToRender.forEach((receipt, i) => {
+                    let item = list.querySelector(`[data-id='${receipt.id}']`);
+                    if (!item) { item = UI.createReceiptItemElement(receipt); item.style.setProperty('--stagger-delay', `${i * 50}ms`); list.appendChild(item); }
                 });
             },
-            createBillItemElement: bill => {
+            createReceiptItemElement: receipt => {
                 const item = document.createElement('li');
                 item.className = 'bill-item-enter bg-surface rounded-2xl p-4 flex items-center justify-between shadow-sm border border-transparent hover:border-outline transition-all duration-300';
-                item.dataset.id = bill.id;
-                const formattedDate = new Date(bill.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-                item.innerHTML = `<div class="flex-1 min-w-0"><p class="font-semibold text-text-primary truncate">${bill.partyName}</p><p class="text-sm text-text-secondary">${bill.billNumber} &bull; ${formattedDate}</p></div><div class="flex items-center ml-2"><button class="edit-btn ${Utils.getClasses('btn-icon')} ripple-effect" aria-label="Edit Bill"><span class="material-icons-outlined text-lg">edit</span></button><button class="delete-btn ${Utils.getClasses('btn-icon')} ripple-effect" aria-label="Delete Bill"><span class="material-icons-outlined text-lg text-error">delete</span></button></div></div>`;
+                item.dataset.id = receipt.id;
+                const formattedDate = new Date(receipt.date + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                const formattedAmount = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(receipt.amount);
+                item.innerHTML = `
+                    <div class="flex-1 min-w-0">
+                        <p class="font-semibold text-text-primary truncate">${receipt.memberName}</p>
+                        <p class="text-sm text-text-secondary">#${receipt.receiptNumber} &bull; ${formattedDate}</p>
+                    </div>
+                    <div class="flex items-center ml-2">
+                        <p class="font-bold text-lg text-primary mr-2">${formattedAmount}</p>
+                        <button class="export-single-btn ${Utils.getClasses('btn-icon')} ripple-effect" aria-label="Export as PDF"><span class="material-icons-outlined text-lg">picture_as_pdf</span></button>
+                        <button class="edit-btn ${Utils.getClasses('btn-icon')} ripple-effect" aria-label="Edit Receipt"><span class="material-icons-outlined text-lg">edit</span></button>
+                        <button class="delete-btn ${Utils.getClasses('btn-icon')} ripple-effect" aria-label="Delete Receipt"><span class="material-icons-outlined text-lg text-error">delete</span></button>
+                    </div>`;
                 return item;
             },
+            updateGrandTotal: (receipts) => {
+                const total = receipts.reduce((sum, r) => sum + parseFloat(r.amount || 0), 0);
+                const formattedTotal = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(total);
+                $.grandTotal.innerHTML = `Grand Total: <span class="font-extrabold">${formattedTotal}</span>`;
+            },
             showSkeletonLoader: () => {
-                let s = ''; for (let i = 0; i < 5; i++) s += `<li class="bg-surface rounded-2xl p-4 space-y-3"><div class="skeleton h-5 w-3/5"></div><div class="skeleton h-4 w-2/5"></div></li>`;
-                $.billList.innerHTML = s;
+                let s = ''; for (let i = 0; i < 5; i++) s += `<li class="bg-surface rounded-2xl p-4 space-y-3"><div class="flex justify-between items-center"><div class="skeleton h-5 w-3/5"></div><div class="skeleton h-6 w-1/5"></div></div><div class="skeleton h-4 w-2/5"></div></li>`;
+                $.receiptList.innerHTML = s;
             },
             toggleButtonLoading: (btn, isLoading) => { btn.disabled = isLoading; btn.classList.toggle('is-loading', isLoading); },
             setTheme: (name, mode, isInitial = false) => {
@@ -310,50 +513,404 @@
                 newOkBtn.onclick = () => { onConfirm(); UI.hideConfirm(); };
             },
             hideConfirm: () => { $.confirmDialogContainer.classList.add('opacity-0', 'pointer-events-none'); $.confirmDialog.classList.add('scale-95'); $.scrim.classList.remove('opacity-100', 'pointer-events-auto'); },
-            showForm: (isEdit = false, bill = null) => {
-                $.submitBtn.querySelector('.btn-text').textContent = isEdit ? 'Update Bill' : 'Save Bill';
-                if (isEdit && bill) { $.billId.value = bill.id; $.billNumber.value = bill.billNumber; $.partyName.value = bill.partyName; $.date.value = bill.date; $.note.value = bill.note; $.formModalLabel.textContent = 'Edit Bill'; }
-                else { $.billForm.reset(); $.billId.value = ''; $.date.valueAsDate = new Date(); $.formModalLabel.textContent = 'Add New Bill'; }
-                $.formSheet.classList.remove('translate-y-full'); $.scrim.classList.add('opacity-100', 'pointer-events-auto'); $.addBillFab.classList.add('scale-0');
+            showForm: (isEdit = false, receipt = null) => {
+                $.submitBtn.querySelector('.btn-text').textContent = isEdit ? 'Update Receipt' : 'Save Receipt';
+                if (isEdit && receipt) {
+                    $.receiptId.value = receipt.id; $.receiptNumber.value = receipt.receiptNumber; $.memberName.value = receipt.memberName;
+                    $.date.value = receipt.date; $.note.value = receipt.note; $.amount.value = receipt.amount;
+                    $.formModalLabel.textContent = 'Edit Receipt';
+                } else {
+                    $.receiptForm.reset(); $.receiptId.value = ''; $.date.valueAsDate = new Date(); $.formModalLabel.textContent = 'Add New Receipt';
+                }
+                $.receiptFormSheet.classList.remove('translate-y-full'); $.scrim.classList.add('opacity-100', 'pointer-events-auto'); $.addReceiptFab.classList.add('scale-0');
             },
-            hideForm: () => { $.formSheet.classList.add('translate-y-full'); $.scrim.classList.remove('opacity-100', 'pointer-events-auto'); $.addBillFab.classList.remove('scale-0'); },
+            hideForm: () => { $.receiptFormSheet.classList.add('translate-y-full'); $.scrim.classList.remove('opacity-100', 'pointer-events-auto'); $.addReceiptFab.classList.remove('scale-0'); },
+            showSettings: async () => {
+                UI.loadProfile();
+                UI.loadSignature();
+                $.settingsSheet.classList.remove('translate-y-full');
+                $.scrim.classList.add('opacity-100', 'pointer-events-auto');
+                $.addReceiptFab.classList.add('scale-0');
+                if (typeof SignaturePad === 'undefined') {
+                    await Utils.loadScript("https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js");
+                }
+                if (!signaturePad) {
+                    signaturePad = new SignaturePad($.sigCanvas);
+                }
+                signaturePad.clear();
+            },
+            hideSettings: () => {
+                $.settingsSheet.classList.add('translate-y-full');
+                $.scrim.classList.remove('opacity-100', 'pointer-events-auto');
+                $.addReceiptFab.classList.remove('scale-0');
+            },
+            loadProfile: () => {
+                $.adminName.value = localStorage.getItem('adminName') || '';
+                $.blockNumber.value = localStorage.getItem('blockNumber') || '';
+                $.sigPreviewType.textContent = $.adminName.value || 'Your Name';
+            },
+            loadSignature: () => {
+                const sigData = localStorage.getItem('signatureDataUrl');
+                if (sigData) {
+                    $.currentSigImg.src = sigData;
+                    $.currentSigImg.classList.remove('hidden');
+                    $.removeSigBtn.classList.remove('hidden');
+                } else {
+                    $.currentSigImg.classList.add('hidden');
+                    $.removeSigBtn.classList.add('hidden');
+                    $.currentSigImg.src = '';
+                }
+            },
             initEventListeners: () => {
-                $.body.addEventListener('click', e => { const t = e.target.closest('.ripple-effect'); if (t) { const r = document.createElement('span'); r.className = 'ripple'; const rect = t.getBoundingClientRect(); r.style.left = `${e.clientX - rect.left}px`; r.style.top = `${e.clientY - rect.top}px`; t.appendChild(r); r.addEventListener('animationend', () => r.remove()); } if (e.target.closest('.edit-btn')) Events.onEditClick(e.target.closest('.edit-btn')); if (e.target.closest('.delete-btn')) Events.onDeleteClick(e.target.closest('.delete-btn')); });
+                $.body.addEventListener('click', e => {
+                    const t = e.target.closest('.ripple-effect');
+                    if (t) { const r = document.createElement('span'); r.className = 'ripple'; const rect = t.getBoundingClientRect(); r.style.left = `${e.clientX - rect.left}px`; r.style.top = `${e.clientY - rect.top}px`; t.appendChild(r); r.addEventListener('animationend', () => r.remove()); }
+                    if (e.target.closest('.edit-btn')) Events.onEditClick(e.target.closest('.edit-btn'));
+                    if (e.target.closest('.delete-btn')) Events.onDeleteClick(e.target.closest('.delete-btn'));
+                    if (e.target.closest('.export-single-btn')) Events.onExportSingleClick(e.target.closest('.export-single-btn'));
+                });
                 $.themeToggler.addEventListener('click', Events.onThemeToggle);
                 $.themeCycler.addEventListener('click', Events.onThemeCycle);
-                $.exportPdfBtn.addEventListener('click', Events.onExportClick);
+                $.settingsBtn.addEventListener('click', UI.showSettings);
+                $.exportPdfBtn.addEventListener('click', PDF.generateSummary);
+                $.exportExcelBtn.addEventListener('click', Events.onExportExcel);
                 $.searchInput.addEventListener('input', Utils.debounce(UI.refreshList, 300));
-                $.addBillFab.addEventListener('click', Events.onFabClick);
-                $.scrim.addEventListener('click', () => { UI.hideForm(); UI.hideConfirm(); });
-                $.billForm.addEventListener('submit', Events.onSubmit);
+                $.addReceiptFab.addEventListener('click', Events.onFabClick);
+                $.scrim.addEventListener('click', () => { UI.hideForm(); UI.hideConfirm(); UI.hideSettings(); });
+                $.receiptForm.addEventListener('submit', Events.onSubmit);
+                $.loginForm.addEventListener('submit', Events.onLogin);
+                $.profileForm.addEventListener('submit', Events.onSaveProfile);
+                $.passwordForm.addEventListener('submit', Events.onSavePassword);
+                $.sigTabType.addEventListener('click', () => Events.onSigTabClick('Type'));
+                $.sigTabDraw.addEventListener('click', () => Events.onSigTabClick('Draw'));
+                $.sigTabUpload.addEventListener('click', () => Events.onSigTabClick('Upload'));
+                $.sigClearBtn.addEventListener('click', () => signaturePad.clear());
+                $.sigSaveDrawBtn.addEventListener('click', Events.onSaveDraw);
+                $.sigSaveTypeBtn.addEventListener('click', Events.onSaveType);
+                $.sigUploadInput.addEventListener('change', Events.onUpload);
+                $.removeSigBtn.addEventListener('click', Events.onRemoveSignature);
                 $.confirmCancelBtn.addEventListener('click', UI.hideConfirm);
             }
         };
 
         // --- Event Handlers ---
         const Events = {
+            onLogin: async (e) => {
+                e.preventDefault();
+                UI.toggleButtonLoading($.loginBtn, true);
+                const user = $.username.value.trim();
+                const pass = $.password.value.trim();
+                const storedHash = localStorage.getItem('hashedPassword');
+                const passHash = await Utils.hash(pass);
+                const defaultHash = await Utils.hash('google');
+
+                await new Promise(res => setTimeout(res, 300));
+
+                if (user === 'admin' && (storedHash ? passHash === storedHash : passHash === defaultHash)) {
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    await UI.showApp();
+                } else {
+                    UI.showToast("Invalid username or password.", "error");
+                    Utils.hapticFeedback('heavy');
+                    $.loginScreen.querySelector('.w-full').classList.add('animate-shake');
+                    setTimeout(() => $.loginScreen.querySelector('.w-full').classList.remove('animate-shake'), 820);
+                }
+                UI.toggleButtonLoading($.loginBtn, false);
+            },
+            onSaveProfile: (e) => {
+                e.preventDefault();
+                UI.toggleButtonLoading($.saveProfileBtn, true);
+                localStorage.setItem('adminName', $.adminName.value.trim());
+                localStorage.setItem('blockNumber', $.blockNumber.value.trim());
+                $.sigPreviewType.textContent = $.adminName.value || 'Your Name';
+                UI.showToast("Profile saved successfully!");
+                UI.toggleButtonLoading($.saveProfileBtn, false);
+            },
+            onSavePassword: async (e) => {
+                e.preventDefault();
+                const newPass = $.newPassword.value;
+                const confirmPass = $.confirmPassword.value;
+
+                if (newPass.length < 4) {
+                    UI.showToast("Password must be at least 4 characters.", "error");
+                    return;
+                }
+                if (newPass !== confirmPass) {
+                    UI.showToast("Passwords do not match.", "error");
+                    return;
+                }
+
+                UI.toggleButtonLoading($.savePasswordBtn, true);
+                const newHash = await Utils.hash(newPass);
+                localStorage.setItem('hashedPassword', newHash);
+                $.passwordForm.reset();
+                UI.showToast("Password changed successfully!");
+                UI.toggleButtonLoading($.savePasswordBtn, false);
+                UI.hideSettings();
+            },
             onThemeToggle: () => { currentTheme.mode = currentTheme.mode === 'light' ? 'dark' : 'light'; UI.setTheme(currentTheme.name, currentTheme.mode); },
             onThemeCycle: () => { const currentIndex = THEMES.indexOf(currentTheme.name); const nextIndex = (currentIndex + 1) % THEMES.length; currentTheme.name = THEMES[nextIndex]; UI.setTheme(currentTheme.name, currentTheme.mode); },
             onFabClick: () => { Utils.hapticFeedback(); UI.showForm(); },
-            onSubmit: async (e) => {
-                e.preventDefault(); if (!$.billForm.checkValidity()) { UI.showToast("Please fill all required fields.", "error"); return; }
-                UI.toggleButtonLoading($.submitBtn, true);
-                const billData = { billNumber: $.billNumber.value.trim(), partyName: $.partyName.value.trim(), date: $.date.value, note: $.note.value.trim() };
-                const billId = $.billId.value; if (billId) billData.id = parseInt(billId);
-                await DBMgr.save(billData); UI.hideForm(); Utils.hapticFeedback('success'); UI.showToast(`Bill ${billId ? 'updated' : 'saved'} successfully!`); await UI.refreshList(); UI.toggleButtonLoading($.submitBtn, false);
+            onSigTabClick: (tabName) => {
+                ['Type', 'Draw', 'Upload'].forEach(t => {
+                    const tab = $[`sigTab${t}`];
+                    const panel = $[`sigPanel${t}`];
+                    if (t === tabName) {
+                        tab.classList.add('border-primary', 'text-primary');
+                        tab.classList.remove('border-transparent', 'text-text-secondary');
+                        panel.classList.remove('hidden');
+                    } else {
+                        tab.classList.remove('border-primary', 'text-primary');
+                        tab.classList.add('border-transparent', 'text-text-secondary');
+                        panel.classList.add('hidden');
+                    }
+                });
             },
-            onEditClick: async (btn) => { const id = parseInt(btn.closest('li').dataset.id); const bill = await DBMgr.get(id); if (bill) UI.showForm(true, bill); },
+            onSaveDraw: () => {
+                if (signaturePad.isEmpty()) {
+                    UI.showToast("Please provide a signature first.", "error");
+                } else {
+                    const dataURL = signaturePad.toDataURL("image/png");
+                    localStorage.setItem('signatureDataUrl', dataURL);
+                    UI.loadSignature();
+                    UI.showToast("Signature saved!");
+                }
+            },
+            onSaveType: () => {
+                const name = $.adminName.value.trim();
+                if (!name) {
+                    UI.showToast("Please set an 'Authorised Name' in your profile first.", "error");
+                    return;
+                }
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 400;
+                canvas.height = 100;
+                ctx.fillStyle = currentTheme.mode === 'light' ? '#fff' : '#1e1e1e';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.font = "70px 'Dancing Script', cursive";
+                ctx.fillStyle = currentTheme.mode === 'light' ? '#1c1b1f' : '#e4e2e6';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(name, canvas.width / 2, canvas.height / 2);
+
+                const dataURL = canvas.toDataURL("image/png");
+                localStorage.setItem('signatureDataUrl', dataURL);
+                UI.loadSignature();
+                UI.showToast("Signature saved!");
+            },
+            onUpload: (e) => {
+                const file = e.target.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        $.sigPreviewUpload.src = event.target.result;
+                        $.sigPreviewUpload.classList.remove('hidden');
+                        localStorage.setItem('signatureDataUrl', event.target.result);
+                        UI.loadSignature();
+                        UI.showToast("Signature saved!");
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    UI.showToast("Please select a valid image file.", "error");
+                }
+            },
+            onRemoveSignature: () => {
+                localStorage.removeItem('signatureDataUrl');
+                UI.loadSignature();
+                UI.showToast("Signature removed.", "error");
+            },
+            onSubmit: async (e) => {
+                e.preventDefault(); if (!$.receiptForm.checkValidity()) { UI.showToast("Please fill all required fields.", "error"); return; }
+                UI.toggleButtonLoading($.submitBtn, true);
+                const receiptData = {
+                    receiptNumber: $.receiptNumber.value.trim(),
+                    memberName: $.memberName.value.trim(),
+                    date: $.date.value,
+                    amount: parseFloat($.amount.value) || 0,
+                    note: $.note.value.trim()
+                };
+                const receiptId = $.receiptId.value; if (receiptId) receiptData.id = parseInt(receiptId);
+                await DBMgr.save(receiptData);
+                UI.hideForm();
+                Utils.hapticFeedback('success');
+                UI.showToast(`Receipt ${receiptId ? 'updated' : 'saved'} successfully!`);
+                await UI.refreshList();
+                UI.toggleButtonLoading($.submitBtn, false);
+            },
+            onEditClick: async (btn) => { const id = parseInt(btn.closest('li').dataset.id); const receipt = await DBMgr.get(id); if (receipt) UI.showForm(true, receipt); },
             onDeleteClick: (btn) => {
                 const item = btn.closest('li'); const id = parseInt(item.dataset.id);
-                UI.showConfirm({ title: 'Delete Bill?', content: 'This action is permanent and cannot be undone.', onConfirm: async () => { item.style.transition = 'all 0.3s ease'; item.style.transform = 'translateX(-100%)'; item.style.opacity = '0'; await DBMgr.delete(id); UI.showToast("Bill deleted.", "error"); setTimeout(() => { item.remove(); UI.refreshList(); }, 300); } });
+                UI.showConfirm({ title: 'Delete Receipt?', content: 'This action is permanent and cannot be undone.', onConfirm: async () => { item.style.transition = 'all 0.3s ease'; item.style.transform = 'translateX(-100%)'; item.style.opacity = '0'; await DBMgr.delete(id); UI.showToast("Receipt deleted.", "error"); setTimeout(() => { item.remove(); UI.refreshList(); }, 300); } });
             },
-            onExportClick: async () => {
+            onExportSingleClick: async (btn) => {
+                const id = parseInt(btn.closest('li').dataset.id);
+                const receipt = await DBMgr.get(id);
+                if (receipt) {
+                    btn.classList.add('is-loading');
+                    btn.disabled = true;
+                    await PDF.generateSingle(receipt);
+                    btn.classList.remove('is-loading');
+                    btn.disabled = false;
+                }
+            },
+            onExportExcel: async () => {
+                UI.toggleButtonLoading($.exportExcelBtn, true);
+                try {
+                    if (typeof XLSX === 'undefined') {
+                        await Utils.loadScript("https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js");
+                    }
+                    const receipts = await DBMgr.getAll();
+                    if (receipts.length === 0) {
+                        UI.showToast("No data to export.", "error");
+                        return;
+                    }
+
+                    const data = receipts.map(r => ({
+                        'Receipt Number': r.receiptNumber,
+                        'Member Name': r.memberName,
+                        'Date': new Date(r.date + 'T00:00:00').toLocaleDateString('en-GB'),
+                        'Amount': r.amount,
+                        'Note': r.note
+                    }));
+
+                    const totalAmount = receipts.reduce((sum, r) => sum + parseFloat(r.amount || 0), 0);
+
+                    const ws = XLSX.utils.json_to_sheet(data);
+
+                    // Add Grand Total row
+                    XLSX.utils.sheet_add_aoa(ws, [['', '', 'Grand Total:', totalAmount]], {origin: -1});
+
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "Receipts");
+
+                    XLSX.writeFile(wb, `Nilkanth_Apartment_Receipts_${new Date().toISOString().slice(0, 10)}.xlsx`);
+
+                } catch(err) {
+                    console.error("Excel Export Error:", err);
+                    UI.showToast("Error creating Excel file.", "error");
+                } finally {
+                    UI.toggleButtonLoading($.exportExcelBtn, false);
+                }
+            }
+        };
+
+        const PDF = {
+            _prepareLibs: async () => {
+                if (typeof window.jspdf === 'undefined') { await Utils.loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"); await Utils.loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"); }
+                if (typeof window.jspdf.jsPDF === 'undefined') throw new Error("jsPDF not loaded correctly.");
+                return window.jspdf;
+            },
+            generateSingle: async (receipt) => {
+                try {
+                    const { jsPDF } = await PDF._prepareLibs();
+                    const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a5' });
+                    const theme = PDF_THEME_COLORS[currentTheme.name][currentTheme.mode];
+                    const textColor = currentTheme.mode === 'dark' ? '#E4E2E6' : '#1C1B1F';
+                    const secondaryColor = currentTheme.mode === 'dark' ? '#A0A0B3' : '#5F5F6E';
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    const margin = 10;
+
+                    doc.addFont('Helvetica', 'normal', 'normal');
+                    doc.addFont('Helvetica', 'bold', 'bold');
+
+                    // --- Header ---
+                    doc.setFont('Helvetica', 'bold');
+                    doc.setFontSize(16);
+                    doc.setTextColor(theme.primary);
+                    doc.text("નીલકંઠ એપાર્ટમેન્ટ વિભાગ -૧", pageWidth / 2, margin + 5, { align: 'center' });
+                    doc.setFont('Helvetica', 'normal');
+                    doc.setFontSize(9);
+                    doc.setTextColor(textColor);
+                    doc.text("કો.ઓપ. હાઉસિંગ સર્વિસ સોસાયટી લિ.", pageWidth / 2, margin + 10, { align: 'center' });
+                    doc.setFontSize(8);
+                    doc.setTextColor(secondaryColor);
+                    doc.text("બ્લોક નંબર ૧ થી ૬, EWS-51.આઈ.સી.બી આઈલેન્ડની બાજુમાં વંદે માતરમ ચાર રસ્તા નજીક ગોતા, અમદાવાદ", pageWidth / 2, margin + 14, { align: 'center' });
+                    doc.setFontSize(7);
+                    doc.text("REG.NO CSAHDCSAHAA202500987", pageWidth / 2, margin + 17, { align: 'center' });
+
+                    // --- Title & Details ---
+                    doc.setLineWidth(0.5);
+                    doc.line(margin, margin + 22, pageWidth - margin, margin + 22);
+                    doc.setFont('Helvetica', 'bold');
+                    doc.setFontSize(12);
+                    doc.setTextColor(textColor);
+                    doc.text("Maintenance Receipt", pageWidth / 2, margin + 28, { align: 'center' });
+                    doc.setFont('Helvetica', 'normal');
+                    doc.setFontSize(10);
+                    doc.text(`Receipt No: ${receipt.receiptNumber}`, margin, margin + 38);
+                    const formattedDate = new Date(receipt.date + 'T00:00:00').toLocaleDateString('en-GB');
+                    doc.text(`Date: ${formattedDate}`, pageWidth - margin, margin + 38, { align: 'right' });
+
+                    // --- Body ---
+                    doc.setLineWidth(0.2);
+                    doc.rect(margin, margin + 45, pageWidth - (margin * 2), 50);
+                    doc.setFontSize(10);
+                    doc.setTextColor(secondaryColor);
+                    doc.text("Received with thanks from:", margin + 2, margin + 51);
+                    doc.setFont('Helvetica', 'bold');
+                    doc.setFontSize(11);
+                    doc.setTextColor(textColor);
+                    doc.text(receipt.memberName, margin + 5, margin + 58);
+
+                    doc.setTextColor(secondaryColor);
+                    doc.setFont('Helvetica', 'normal');
+                    doc.text("the sum of Rupees:", margin + 2, margin + 65);
+                    doc.setFont('Helvetica', 'bold');
+                    doc.setFontSize(11);
+                    doc.setTextColor(textColor);
+                    const amountInWords = Utils.toWords(receipt.amount);
+                    const splitWords = doc.splitTextToSize(amountInWords, pageWidth - (margin * 2) - 10);
+                    doc.text(splitWords, margin + 5, margin + 72);
+
+                    doc.setFont('Helvetica', 'normal');
+                    doc.setTextColor(secondaryColor);
+                    doc.text("for the purpose of:", margin + 2, margin + 85);
+                    doc.setFont('Helvetica', 'bold');
+                    doc.setFontSize(11);
+                    doc.setTextColor(textColor);
+                    doc.text(receipt.note || 'Society Maintenance', margin + 5, margin + 92);
+
+                    // --- Amount Box ---
+                    doc.setFillColor(theme.tableHeadBg);
+                    doc.rect(pageWidth - margin - 45, margin + 48, 40, 15, 'F');
+                    doc.setFont('Helvetica', 'bold');
+                    doc.setFontSize(14);
+                    doc.setTextColor(theme.tableHeadText);
+                    const formattedAmount = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(receipt.amount);
+                    doc.text(formattedAmount, pageWidth - margin - 25, margin + 58, { align: 'center' });
+
+                    // --- Footer ---
+                    doc.setFontSize(9);
+                    doc.setTextColor(secondaryColor);
+                    doc.text("This is only a digital soft copy.", margin, doc.internal.pageSize.getHeight() - 20);
+                    doc.text("For Nilkanth Apartment Vibhag-1", pageWidth - margin, doc.internal.pageSize.getHeight() - 20, { align: 'right'});
+                    const adminName = localStorage.getItem('adminName') || 'Authorised Signatory';
+                    const sigDataUrl = localStorage.getItem('signatureDataUrl');
+
+                    if (sigDataUrl) {
+                        doc.addImage(sigDataUrl, 'PNG', pageWidth - margin - 50, doc.internal.pageSize.getHeight() - 45, 40, 20);
+                    }
+                    doc.text(adminName, pageWidth - margin, doc.internal.pageSize.getHeight() - 10, { align: 'right'});
+                    doc.setFont('Helvetica', 'normal');
+                    doc.setFontSize(8);
+                    doc.setTextColor(secondaryColor);
+                    doc.text("Created By Yash K Pathak", margin, doc.internal.pageSize.getHeight() - 5);
+
+
+                    doc.save(`Receipt-${receipt.receiptNumber}-${receipt.memberName}.pdf`);
+
+                } catch (err) {
+                    console.error("Single PDF Export Error:", err);
+                    UI.showToast("Error creating PDF.", "error");
+                }
+            },
+            generateSummary: async () => {
                 UI.toggleButtonLoading($.exportPdfBtn, true);
                 try {
-                    if (typeof window.jspdf === 'undefined') { await Utils.loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"); await Utils.loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"); }
-                    if (typeof window.jspdf.jsPDF === 'undefined') throw new Error("jsPDF not loaded correctly.");
-                    const bills = await DBMgr.getAll(); if (bills.length === 0) { UI.showToast("No data to export.", "error"); return; }
-                    const { jsPDF } = window.jspdf; const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+                    const { jsPDF } = await PDF._prepareLibs();
+                    const receipts = await DBMgr.getAll(); if (receipts.length === 0) { UI.showToast("No data to export.", "error"); return; }
+                    const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
                     
                     const theme = PDF_THEME_COLORS[currentTheme.name][currentTheme.mode];
                     const commonColors = { text: currentTheme.mode === 'dark' ? '#E4E2E6' : '#1C1B1F', secondaryText: currentTheme.mode === 'dark' ? '#A0A0B3' : '#5F5F6E', headerBg: currentTheme.mode === 'dark' ? '#1E1E1E' : '#F8F9FA', tableBorder: currentTheme.mode === 'dark' ? '#44444f' : '#DEE2E6' };
@@ -361,18 +918,20 @@
                     const pageWidth = doc.internal.pageSize.getWidth(); const pageHeight = doc.internal.pageSize.getHeight(); const margin = 15;
                     doc.addFont('Helvetica', 'normal', 'normal'); doc.addFont('Helvetica', 'bold', 'bold');
 
-                    const bodyData = bills.map(b => [b.billNumber, b.partyName, new Date(b.date + 'T00:00:00').toLocaleDateString('en-GB'), b.note || '-']);
+                    const bodyData = receipts.map(r => [r.receiptNumber, r.memberName, new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(r.amount), new Date(r.date + 'T00:00:00').toLocaleDateString('en-GB'), r.note || '-']);
+                    const totalAmount = receipts.reduce((sum, r) => sum + parseFloat(r.amount || 0), 0);
+                    bodyData.push([{ content: 'Grand Total', colSpan: 2, styles: { halign: 'right', fontStyle: 'bold'} }, { content: new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(totalAmount), styles: { fontStyle: 'bold'} }, { content: '', colSpan: 2}])
+
                     doc.autoTable({
-                        head: [['Bill Number', 'Party Name', 'Date', 'Note']], body: bodyData, startY: 45, margin: { left: margin, right: margin }, theme: 'grid',
+                        head: [['Receipt No.', 'Member Name', 'Amount', 'Date', 'Note']], body: bodyData, startY: 45, margin: { left: margin, right: margin }, theme: 'grid',
                         styles: { font: 'Helvetica', fontSize: 9, cellPadding: 2.5, textColor: commonColors.text, lineColor: commonColors.tableBorder, lineWidth: 0.1 },
                         headStyles: { fillColor: theme.tableHeadBg, textColor: theme.tableHeadText, fontStyle: 'bold', fontSize: 10, halign: 'center' },
                         alternateRowStyles: { fillColor: currentTheme.mode === 'dark' ? '#1e1e1e' : '#f9f5ff' },
                         didDrawPage: (data) => {
                             doc.setFillColor(commonColors.headerBg); doc.rect(0, 0, pageWidth, 35, 'F');
-                            doc.setFont('Helvetica', 'bold'); doc.setFontSize(18); doc.setTextColor(theme.primary); doc.text("VPD Pharma", margin, 22);
+                            doc.setFont('Helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(theme.primary); doc.text("નીલકંઠ એપાર્ટમેન્ટ વિભાગ -૧", margin, 18);
                             doc.setFont('Helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(commonColors.secondaryText);
-                            doc.text("Bill History Report", pageWidth - margin, 18, { align: 'right' });
-                            doc.text(`Generated: ${new Date().toLocaleDateString('en-GB')}`, pageWidth - margin, 24, { align: 'right' });
+                            doc.text("Receipts Summary", margin, 25);
                             
                             const pageCount = doc.internal.getNumberOfPages();
                             doc.setFontSize(8); doc.setTextColor(commonColors.secondaryText);
@@ -380,7 +939,7 @@
                             doc.text(`Page ${data.pageNumber} of ${pageCount}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
                         },
                     });
-                    doc.save(`VPD_Pharma_Report_${new Date().toISOString().slice(0, 10)}.pdf`);
+                    doc.save(`Nilkanth_Apartment_Receipts_${new Date().toISOString().slice(0, 10)}.pdf`);
                 } catch (err) { console.error("PDF Export Error:", err); UI.showToast("Error creating PDF.", "error");
                 } finally { UI.toggleButtonLoading($.exportPdfBtn, false); }
             }
@@ -388,6 +947,8 @@
         document.addEventListener('DOMContentLoaded', UI.init);
     })();
     </script>
+</body>
+</html>
 </body>
 </html>
 
